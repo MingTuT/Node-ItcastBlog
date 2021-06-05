@@ -1,0 +1,89 @@
+{{extend '../_layouts/home.html'}}
+
+{{block 'title'}}{{'多人博客 - 首页'}}{{/block}}
+
+{{block 'body'}}
+<section class="container">
+  <div class="col-md-3 list-group">
+    <a href="#" class="list-group-item disabled">用户设置</a>
+    <a href="/settings/profile" class="list-group-item active">基本信息</a>
+    <a href="/settings/admin" class="list-group-item">账户设置</a>
+  </div>
+  <div class="col-md-5">
+    {{if user}}
+    <form id="profile_form">
+      <div class="form-group">
+        <label for="exampleInputEmail1">账号</label>
+        <p name="email" class="form-control-static">{{user.email}}</p>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">昵称</label>
+        <input type="text" name="nickname" class="form-control" id="exampleInputPassword1" value="{{user.nickname}}">
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">介绍</label>
+        <textarea name="bio" class="form-control" rows="3">{{user.bio}}</textarea>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1">性别</label>
+        <div>
+          <label class="radio-inline">
+            <input name="gender" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="-1" {{
+              user.gender==-1?'checked':null }}> 男
+          </label>
+          <label class="radio-inline">
+            <input name="gender" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="1" {{
+              user.gender==1?'checked':null }}> 女
+          </label>
+          <label class="radio-inline">
+            <input name="gender" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="0" {{
+              user.gender==0?'checked':null }}> 保密
+          </label>
+        </div>
+      </div>
+      <!-- <div class="form-group">
+        <label for="">头像设置</label>
+        <input id="input-avatar" type="file" name="avatar">
+      </div> -->
+      <button type="submit" class="btn btn-success">保存</button>
+    </form>
+    {{/if}}
+  </div>
+  <!-- <div class="col-md-2 profile-avatar">
+    <dl>
+      <dt>头像设置</dt>
+      <dd>
+        <img class="avatar" width="150" height="150" src="../public/img/avatar-default.png" alt="">
+        <div>
+          <button class="btn btn-default" href="">Upload new picture</button>
+        </div>
+      </dd>
+    </dl>
+  </div> -->
+</section>
+{{/block}}
+
+{{block 'script'}}
+<script>
+  $('#profile_form').on('submit', function (e) {
+    e.preventDefault()
+    const formData = $(this).serialize()
+    $.ajax({
+      url: '/settings/profile',
+      type: 'post',
+      data: formData,
+      dataType: 'json',
+      success: function (data) {
+        const err_code = data.err_code
+        if (err_code === 0) {
+          window.alert('修改已保存')
+          // window.location.href = '/settings/profile'
+        } else if (err_code === 500) {
+          window.alert('服务器忙，请稍后重试！')
+        }
+      }
+    })
+  })
+
+</script>
+{{/block}}
